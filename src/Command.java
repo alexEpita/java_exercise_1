@@ -74,3 +74,53 @@ class Freq implements Command {
         return false;
     }
 }
+
+class Predict implements Command {
+
+    @Override
+    public String name() {
+        return "predict";
+    }
+
+    public static HashMap<String, Integer> frequence(String str, String word) {
+        var map = new HashMap<String, Integer>();
+        String[] text = str.split("[ \n]");
+        ArrayList<String> tab = new ArrayList<>(Arrays.asList(text));
+        int i = tab.indexOf(word);
+        while (i < tab.size() && i != -1)
+        {
+            tab.set(i, "");
+            String nextWord = tab.get(i + 1);
+            map.merge(nextWord, 1, Integer::sum);
+            i = tab.indexOf(word);
+        }
+        return map;
+    }
+
+    @Override
+    public boolean run(Scanner scanner) {
+        System.out.println("Veuillez saisir le chemin du fichier à analyser:");
+        Path filePath = Paths.get(scanner.nextLine());
+        try {
+            String text = Files.readString(filePath).toLowerCase();
+            System.out.println("Veuillez saisir le premier mot:");
+            String word = scanner.nextLine().toLowerCase();
+            String result = "";
+            for (int i = 0; i < 20; i++) {
+                try {
+                    result += word + " ";
+                    var map = frequence(text, word);
+                    word = Collections.max(map.entrySet(), Map.Entry.comparingByValue()).getKey();
+                } catch (Exception e) {
+                    System.out.println("Le mot ne figure pas dans le texte.");
+                    return false;
+                }
+            }
+            System.out.println(result);
+        } catch (IOException e) {
+            System.out.println("Unreadable file: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
+        return false;
+    }
+
+}

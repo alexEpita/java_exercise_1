@@ -8,6 +8,7 @@ public class Launcher {
         commands.add(new Quit());
         commands.add(new Fibo());
         commands.add(new Freq());
+        commands.add(new Predict());
 
         Scanner scanner = new Scanner(System.in);
 
